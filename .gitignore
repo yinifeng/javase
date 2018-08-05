@@ -40,6 +40,4 @@ java_pid*.zip
 java_pid*.index
 java_pid*.hprof
 java_pid*.threads
-/hobart-java/
-/java8-test/
-/jvm/
+
