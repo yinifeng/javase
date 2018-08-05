@@ -1,0 +1,45 @@
+# maven ignore
+target/
+*.jar
+!.mvn/wrapper/*
+*.war
+*.zip
+*.tar
+*.tar.gz
+
+# eclipse ignore
+.settings/
+.project
+.classpath
+Servers/
+RemoteSystemsTempFiles/
+.recommenders/
+.metadata/
+
+# idea ignore
+.idea/
+*.ipr
+*.iml
+*.iws
+
+# temp ignore
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# system ignore
+.DS_Store
+Thumbs.db
+*.orig
+
+# jvm log
+*.index
+java_pid*.zip
+java_pid*.index
+java_pid*.hprof
+java_pid*.threads
+/hobart-java/
+/java8-test/
+/jvm/
