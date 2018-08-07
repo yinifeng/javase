@@ -40,6 +40,7 @@ package com.hobart.jvm;
  *
  *　　　　例如：8，表示两个Survivor:eden=2:8，即一个Survivor占年轻代的1/10
  *
+ *虚拟机参数：-Xms256m -Xmx512m -XX:+PrintGCDetails -XX:+TraceClassLoading
  */
 public class App 
 {

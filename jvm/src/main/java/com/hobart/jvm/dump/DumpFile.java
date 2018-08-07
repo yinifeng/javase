@@ -12,7 +12,9 @@ import java.util.List;
  * OOM时导出堆到hprof文件
  * 
  * 设置堆内存  及输出dump文件
+ * 虚拟机参数
  * -Xms1m -Xmx8m -XX:+HeapDumpOnOutOfMemoryError
+ * 
  * 
  * @author hobart
  *
