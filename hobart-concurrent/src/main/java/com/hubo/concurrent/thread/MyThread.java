@@ -1,5 +1,8 @@
 package com.hubo.concurrent.thread;
 
+/**
+ * 继承 Thread
+ */
 public class MyThread extends Thread{
     
     public MyThread(){
