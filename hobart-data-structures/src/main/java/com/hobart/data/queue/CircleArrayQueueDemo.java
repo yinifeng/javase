@@ -1,7 +1,5 @@
 package com.hobart.data.queue;
 
-import com.sun.jmx.remote.internal.ArrayQueue;
-
 import java.util.Scanner;
 
 /**

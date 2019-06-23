@@ -1,22 +1,64 @@
 package com.hobart.data.linklist;
 
+import java.util.Stack;
+
 /**
  * 单向链表
+ * 
+ * 缺点：
+ * 只能从一个方向查找
+ * 删除节点，只能找到前面节点，不能删除本身
+ * 
+ * 
  */
-public class SingleLinkListDemo {
+public class SingleLinkedListDemo {
+
+    static SingleLinkList singleLinkList = new SingleLinkList();
+    static HeroNode node1=new HeroNode(1, "宋江", "及时雨");
+    static HeroNode node2=new HeroNode(2, "卢俊义", "玉麒麟");
+    static HeroNode node3=new HeroNode(3, "吴用", "智多星");
+    static HeroNode node4=new HeroNode(4, "林冲", "豹子头");
+    
     
     public static void main(String[] args) {
-        HeroNode node1=new HeroNode(1, "宋江", "及时雨");
-        HeroNode node2=new HeroNode(2, "卢俊义", "玉麒麟");
-        HeroNode node3=new HeroNode(3, "吴用", "智多星");
-        HeroNode node4=new HeroNode(4, "林冲", "豹子头");
+
+        //test1();
         
-        SingleLinkList singleLinkList = new SingleLinkList();
+        test2();
+
+    }
+
+    /**
+     * 合并两个链表，合并后的链表仍然有序
+     * 
+     * 创建一个新的链表哪个小就加上去
+     */
+
+
+    /**
+     * 无序插入
+     * 
+     * 单向链表反转
+     */
+    private static void test1(){
         //无序保存
-//        singleLinkList.addNode(node3);
-//        singleLinkList.addNode(node2);
-//        singleLinkList.addNode(node1);
-//        singleLinkList.addNode(node4);
+        singleLinkList.addNode(node3);
+        singleLinkList.addNode(node2);
+        singleLinkList.addNode(node1);
+        singleLinkList.addNode(node4);
+
+        System.out.println("原来单向链表");
+        singleLinkList.list();
+//        System.out.println("反转单向链表");
+//        reveserList(singleLinkList.getHead());
+//        singleLinkList.list();
+
+        System.out.println("反向打印单链表");
+        printReveserList(singleLinkList.getHead());
+        
+    }
+
+    private static void test2() {
         
         //加入按编号的顺序
         singleLinkList.addNodeByOrder(node3);
@@ -24,22 +66,67 @@ public class SingleLinkListDemo {
         singleLinkList.addNodeByOrder(node1);
         singleLinkList.addNodeByOrder(node4);
         singleLinkList.list();
-        
+
         //修改某个节点的属性
-        HeroNode node6=new HeroNode(2, "小卢", "玉麒麟111");
+        HeroNode node6=new HeroNode(4, "小卢", "玉麒麟111");
         singleLinkList.update(node6);
-        
+
         //删除某个节点
-        singleLinkList.delete(4);
+        singleLinkList.delete(1);
         System.out.println("修改后的数据");
         singleLinkList.list();
-        
+
         //测试获取链表有效长度
         System.out.printf("单链表的有效长度：%d\n",getLength(singleLinkList.getHead()));
-        
+
         //测试查找倒数第k个节点
         System.out.printf("查找的单向链表倒数第k个节点%s",findLastIndexNode(singleLinkList.getHead(),2));
+    }
+
+    /**
+     * 反向打印单向链表
+     * 方式1：方向链表，再打印，这样会改变原来的数据结构
+     * 方式2：遍历链表，把节点保存到栈的结构中，然后遍历栈打印
+     */
+    public static void printReveserList(HeroNode head){
+        if (head.getNext() == null){
+            return;
+        }
         
+        HeroNode current = head.getNext();
+        Stack<HeroNode> stack = new Stack<>();
+        while (current != null){
+            stack.push(current);
+            current = current.getNext();
+        }
+        while (stack.size() > 0){
+            System.out.println(stack.pop());
+        }
+    }
+
+    /**
+     * 反转单向链表 【腾讯面试题】
+     * @param head
+     */
+    public static void  reveserList(HeroNode head){
+        //如果 链表为空，或者链表只有一个节点那么直接返回
+        if (head.getNext() == null || head.getNext().getNext() == null){
+            return;
+        }
+        
+        //定义一个辅助指针帮我们遍历原来的链表
+        HeroNode current = head.getNext();
+        HeroNode next = null;//指向当前节点的下一节点
+        //定义一个临时的头节点
+        HeroNode reveserHead = new HeroNode(0, "", "");
+        while (current != null){
+            next = current.getNext();//暂时保存当前节点的下一个节点，后续需要使用
+            current.setNext(reveserHead.getNext());//将当前节点放到临时头节点的最前端
+            reveserHead.setNext(current);//将当前节点连接到链表上
+            current = next;//后移
+        }
+        //将原来的head 指向反转的head上
+        head.setNext(reveserHead.getNext());
     }
 
     /**
@@ -158,7 +245,7 @@ public class SingleLinkListDemo {
             HeroNode temp = head.getNext();
             boolean flag = false;//找到该节点的标识
             while (true) {
-                if (temp.getNext() == null){
+                if (temp == null){
                     break;
                 }
                 if (temp.getNo() == node.getNo()){
