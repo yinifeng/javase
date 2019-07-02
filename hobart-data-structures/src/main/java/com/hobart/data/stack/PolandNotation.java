@@ -19,6 +19,14 @@ import java.util.Stack;
 public class PolandNotation {
 
     public static void main(String[] args) {
+        List<String> stringList = toInfixExpressionList("1+((2+3)*4)-5");
+        System.out.println("中缀表达式="+stringList);
+        //中缀表达式的集合 =>  后缀表达式（逆波兰表达式）的集合
+        List<String> suffixExpreesionList = parseSuffixExpreesionList(stringList);
+        System.out.println("后缀表达式="+suffixExpreesionList);
+        System.out.printf("转换后缀表达式计算结果=%d\n",calculate(suffixExpreesionList));
+
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>");
         //先定义逆波兰表达式
         //(30+4)*5-6 => 30 4 + 5 * 6 - =>164
         //测试
@@ -31,6 +39,115 @@ public class PolandNotation {
         System.out.println("list="+list);
         int res = calculate(list);
         System.out.println("计算结果是="+res);
+    }
+
+    //中缀表达式的集合 =>  后缀表达式（逆波兰表达式）的集合
+    public static List<String> parseSuffixExpreesionList(List<String> list){
+        //定义两个栈
+        Stack<String> s1=new Stack<>();//符号栈
+        //说明：因为s2这个栈在pop的过程中，没有pop操作，而且后面我们还需要逆序输出
+        //因此比较麻烦，这里我们就不用Stack<String> 直接使用List<String> s2
+        //Stack<String> s2 = new Stack<String>(); //存储中间结果的栈s2
+        List<String> s2=new ArrayList<>();//存储中间结果
+        //遍历list
+        for (String item: list){
+            //如果是一个数直接加入
+            if (item.matches("\\d+")){
+                s2.add(item);
+            }else if(item.equals("(")){
+                s1.push(item);
+            }else if(item.equals(")")){
+                //如果是")"依次弹出s1中的运算符，并压入到s2，直到遇到左括号为止，此时将这一对括号丢弃
+                while (!s1.peek().equals("(")){
+                    s2.add(s1.pop());
+                }
+                s1.pop();//消除"("
+            }else{
+                //当item的优先级小于等于s1栈顶运算符，
+                // 将s1栈顶的运算符弹出并加入到s2中，再次转到（4.1）与s1新的栈顶做比较
+                //问题我们缺少一个比较有限级高低的方法
+                while (s1.size() != 0 && OperationEnum.getOperationValue(s1.peek()) 
+                        >= OperationEnum.getOperationValue(item)){
+                    s2.add(s1.pop());
+                }
+                s1.push(item);//还需要将item压入到s1
+            }
+        }
+        
+        //处理剩下栈中的元素 ，加入到s2中
+         while (s1.size() > 0){
+             s2.add(s1.pop());
+         }
+        return s2;
+    }
+    
+    
+    private static enum OperationEnum{
+        ADD("+",1),
+        SUB("-",1),
+        MUL("*",2),
+        MUL2("x",2),
+        DIV("/",2);
+
+        private String type;
+        
+        private int value;
+
+        OperationEnum(String type,int value){
+            this.type = type;
+            this.value = value;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
+        }
+        
+        public static int getOperationValue(String type){
+            for (OperationEnum enm:OperationEnum.values()){
+                if (enm.getType().equals(type)){
+                    return enm.getValue();
+                }
+            }
+            //throw new RuntimeException("非法运算符"+type);
+            System.err.println("运算符有误："+type);
+            return 0;
+        }
+    }
+    
+    //将中缀表达式转成对应的List
+    // s="1+((2+3)*4)-5"
+    public static List<String> toInfixExpressionList(String s){
+        List<String> list = new ArrayList<>();
+        int index = 0;//这是一个指针用于遍历中缀表达式的字符串
+        String str;//对多位数的拼接
+        char c;//遍历到没个字符，就放入到c
+        do{
+            if ((c =s.charAt(index)) < 48 || (c =s.charAt(index)) > 57) {//非数字
+                list.add(String.valueOf(c));
+                index++;
+            }else{
+                str = "";
+                //数字，考虑多位数问题
+                while (index < s.length() && (c =s.charAt(index)) >= 48 && (c =s.charAt(index)) <=57){
+                    str += c;
+                    index ++;
+                }
+                list.add(str);
+            }
+        }while (index < s.length());
+        return list;
     }
 
     /**
