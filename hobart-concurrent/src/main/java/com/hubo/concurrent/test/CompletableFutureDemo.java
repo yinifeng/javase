@@ -1,6 +1,7 @@
 package com.hubo.concurrent.test;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -37,7 +38,59 @@ public class CompletableFutureDemo {
         //testFastCompletableFuture();
 
         //合并计算结果
-        testCombineCompletableFuture();
+        //testCombineCompletableFuture();
+
+        test11();
+    }
+
+
+    /**
+     * 多个任务并行计算 合并成一个结果
+     */
+    private static void test11() {
+        long start = System.currentTimeMillis();
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        List<Integer> datas = Arrays.asList(4, 2, 1, 6, 6);
+
+        List<CompletableFuture<Boolean>> futures = datas.stream().map(data -> {
+            return CompletableFuture.supplyAsync(() -> {
+                int i = 0;
+                try {
+                    if (data == 6) {
+                        throw new RuntimeException("数据6计算错误");
+                    }
+                    i = (data % 2 == 0 ? data * 2 : data * 3);
+                    TimeUnit.SECONDS.sleep(data);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                print("supply计算结果:" + i);
+                return i;
+            }, executorService).handle((result, throwable) -> {
+                if (throwable != null) {
+                    print("异常handle计算结果:" + Boolean.FALSE + ",异常原因：" + throwable.getMessage());
+                    return Boolean.FALSE;
+                }else {
+                    if (result % 2 == 0) {
+                        print("handle计算结果:" + Boolean.TRUE);
+                        return Boolean.TRUE;
+                    } else {
+                        print("handle计算结果:" + Boolean.FALSE);
+                        return Boolean.FALSE;
+                    }
+                }
+            });
+        }).collect(Collectors.toList());
+
+
+        Iterator<CompletableFuture<Boolean>> iterator = futures.iterator();
+        CompletableFuture<Boolean> future = iterator.next();
+        while (iterator.hasNext()) {
+            future = future.thenCombine(iterator.next(),(r1,r2) -> r1 || r2);
+        }
+        Boolean result = future.join();
+        print("合并计算结果:" + result + ",耗时：" + ((System.currentTimeMillis() - start) / 1000.0));
+        executorService.shutdown();
     }
 
 
